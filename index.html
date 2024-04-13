@@ -107,6 +107,53 @@
         });
 
         this.physics.add.collider( stars , platforms );        
+        this.physics.add.overlap( player , stars , CollectStar , null , this );
+
+        function CollectStar( player , star )
+        {
+            star.disableBody( true , true );
+            ScoreUpdate(10);
+            CheckLevelComplete();
+        }
+
+        function CheckLevelComplete()
+        {
+            if( stars.countActive(true) === 0 )
+            {
+                // SpawnStars
+                stars.children.iterate( function( child ){
+                    child.enableBody( true , child.x , 0 , true , true );
+                });
+
+                SpawnBomb();
+            }
+        }
+
+
+        // BOMBS 
+        bombs = this.physics.add.group();
+        
+        this.physics.add.collider( bombs , platforms );
+        this.physics.add.collider( player , bombs , HitBomb , null , this );
+
+        function HitBomb( player , bomb )
+        {
+            this.physics.pause();
+            player.setTint(0xcc0000);
+            player.anims.play('turn');
+            gameOver = true;
+        }
+
+        function SpawnBomb()
+        {
+            // Spawn bomb opposite to the player. 
+            var x = ( player.x > 400 ) ?  Phaser.Math.Between( 400 , 800 ) : Phaser.Math.Between( 0 , 400 );
+
+            var bomb = bombs.create( x , 16 , 'bomb' );
+            bomb.setBounce( 1 );
+            bomb.setCollideWorldBounds( true );
+            bomb.setVelocity( Phaser.Math.Between( -200 , 200 ), 20 );
+        }
 
 
         // SCORE 
@@ -121,17 +168,7 @@
             scoreText.setText('Score: ' + score );
         }
 
-
-        // INTERACTION
-        this.physics.add.overlap( player , stars , CollectStar , null , this );
-
-        function CollectStar( player , star )
-        {
-            star.disableBody( true , true );
-            ScoreUpdate(10);
-        }
-
-        
+       
         // INPUT 
         cursors = this.input.keyboard.createCursorKeys();
     }
