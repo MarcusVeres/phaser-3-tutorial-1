@@ -93,10 +93,45 @@
         this.physics.add.collider( player , platforms ); // monitors two physics objects for collisions
 
 
-        // STAR 1
-        this.add.image( 400 , 300 , 'star' );   
+        // STARS
+        // this.add.image( 400 , 300 , 'star' );   
+
+        stars = this.physics.add.group({
+            key: 'star',
+            repeat: 11,
+            setXY: { x: 12 , y: 10 , stepX: 70 },
+        });
+
+        stars.children.iterate( function( child ) {
+            child.setBounceY( Phaser.Math.FloatBetween( 0.4 , 0.8 ));
+        });
+
+        this.physics.add.collider( stars , platforms );        
 
 
+        // SCORE 
+        var score = 0;
+        var scoreText;
+
+        scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+
+        function ScoreUpdate( int )
+        {
+            score += int;
+            scoreText.setText('Score: ' + score );
+        }
+
+
+        // INTERACTION
+        this.physics.add.overlap( player , stars , CollectStar , null , this );
+
+        function CollectStar( player , star )
+        {
+            star.disableBody( true , true );
+            ScoreUpdate(10);
+        }
+
+        
         // INPUT 
         cursors = this.input.keyboard.createCursorKeys();
     }
