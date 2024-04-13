@@ -56,6 +56,7 @@
         // BACKGROUND
         this.add.image( 0 , 0 , 'sky' ).setOrigin( 0 , 0 );
 
+
         // PLATFORMS
         platforms = this.physics.add.staticGroup();
         platforms.create( 400 , 568 , 'ground' ).setScale(2).refreshBody();        
@@ -63,6 +64,7 @@
         platforms.create(50, 260, 'ground');
         platforms.create(720, 220, 'ground');
         
+
         // PLAYERS 
         player = this.physics.add.sprite( 100 , 450 , 'dude' );
         player.setBounce( 0.2 );
@@ -88,12 +90,39 @@
             repeat: -1,
         });
 
+        this.physics.add.collider( player , platforms ); // monitors two physics objects for collisions
+
+
         // STAR 1
         this.add.image( 400 , 300 , 'star' );   
+
+
+        // INPUT 
+        cursors = this.input.keyboard.createCursorKeys();
     }
 
     function update ()
     {
+        if( cursors.left.isDown )
+        {
+            player.setVelocityX( -160 );
+            player.anims.play( 'left' , true );
+        }
+        else if ( cursors.right.isDown )
+        {
+            player.setVelocityX( 160 );
+            player.anims.play( 'right' , true );
+        }
+        else 
+        {
+            player.setVelocityX( 0 );
+            player.anims.play( 'turn' , true );
+        }
+
+        if( cursors.up.isDown && player.body.touching.down )
+        {
+            player.setVelocityY( -330 );
+        }
     }
 
 </script>
